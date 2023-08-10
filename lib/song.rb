@@ -75,12 +75,13 @@ class Song
       self.new_from_db(row)
     end.first
 
-    # Alternate? => DOES NOT WORK => returns an array within an array
+    # Alternate => WORKS, but more uses more lines
+    # record is an array wihtin an array => still need to use .first method
     # record = DB[:conn].execute(sql, name).filter do |row|
     #   row[1] == name
     # end
     # # binding.pry
-    # self.new_from_db(record)
+    # self.new_from_db(record.first)
   end
 
 end
