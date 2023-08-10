@@ -1,3 +1,5 @@
+require 'pry'
+
 class Song
 
   attr_accessor :name, :album, :id
@@ -47,6 +49,38 @@ class Song
   def self.create(name:, album:)
     song = Song.new(name: name, album: album)
     song.save
+  end
+
+  def self.new_from_db(row) # row = record from database as an array
+    # self.new is equivalent to Song.new => this is s CLASS method, so self = Song
+    self.new(id: row[0], name: row[1], album: row[2])
+  end
+
+  def self.all
+    sql = <<-SQL
+      SELECT * FROM songs
+    SQL
+
+    DB[:conn].execute(sql).map do |row|
+      self.new_from_db(row)
+    end
+  end
+
+  def self.find_by_name (name)
+    sql = <<-SQL
+      SELECT * FROM songs WHERE name = ? LIMIT 1
+    SQL
+
+    DB[:conn].execute(sql, name).map do |row|
+      self.new_from_db(row)
+    end.first
+
+    # Alternate? => DOES NOT WORK => returns an array within an array
+    # record = DB[:conn].execute(sql, name).filter do |row|
+    #   row[1] == name
+    # end
+    # # binding.pry
+    # self.new_from_db(record)
   end
 
 end
